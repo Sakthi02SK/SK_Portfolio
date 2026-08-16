@@ -120,6 +120,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Dynamic Experience Calculation ---
+    // The portfolio has one source of truth for the employment start year.
+    // Update data-start-year in #experiencePeriod when the start year changes.
+    const experiencePeriod = document.getElementById('experiencePeriod');
+    const experienceYears = document.getElementById('experienceYears');
+
+    function calculateExperienceYears(startYear) {
+        const currentYear = new Date().getFullYear();
+        const parsedStartYear = Number(startYear);
+
+        if (!Number.isFinite(parsedStartYear) || parsedStartYear > currentYear) {
+            return 0;
+        }
+
+        return currentYear - parsedStartYear;
+    }
+
+    if (experiencePeriod) {
+        const startYear = experiencePeriod.dataset.startYear;
+        const years = calculateExperienceYears(startYear);
+
+        // Keep the displayed employment period in sync with the current year.
+        const experienceDate = document.getElementById('experienceDate');
+        if (experienceDate) {
+            experienceDate.textContent = `${startYear} — Present`;
+        }
+
+        // Feed the calculated value into the existing counter animation.
+        if (experienceYears) {
+            experienceYears.setAttribute('data-count', years);
+        }
+    }
+
     // --- Counter Animation ---
     const counters = document.querySelectorAll('.stat-number[data-count]');
     const counterObserver = new IntersectionObserver((entries) => {
